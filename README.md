@@ -35,13 +35,16 @@ This experiment builds a native app for Windows, Mac Os and Linux from the same 
 	```
 	${basedir}
 	└───target
-	       TestApp-1.0.0_SNAPSHOT-linux.tar.gz
-	       TestApp-1.0.0_SNAPSHOT-mac.tar.gz
-	       TestApp-1.0.0_SNAPSHOT-windows.zip
-	       TestApp_1.0.0_SNAPSHOT.deb
-	       TestApp_1.0.0_SNAPSHOT.exe
-	       TestApp_1.0.0_SNAPSHOT.rpm
+	       TestApp-1.0.0_SNAPSHOT-linux.tar.gz	---> all platforms
+	       TestApp-1.0.0_SNAPSHOT-mac.tar.gz	---> all platforms
+	       TestApp-1.0.0_SNAPSHOT-windows.zip	---> all platforms
+	       TestApp_1.0.0_SNAPSHOT.deb			---> all platforms
+	       TestApp_1.0.0_SNAPSHOT.rpm			---> all platforms
+	       TestApp_1.0.0_SNAPSHOT.dmg			---> only if running from Mac OS
+	       TestApp_1.0.0_SNAPSHOT.pkg			---> only if running from Mac Os
+	       TestApp_1.0.0_SNAPSHOT.exe			---> only if running from Windows
+	       TestApp_1.0.0_SNAPSHOT.msi			---> only if running from Windows
 	```
 
-	> :warning: The above example is running the build from Windows!
+	
 
