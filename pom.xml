@@ -157,8 +157,9 @@
 				<artifactId>javapackager</artifactId>
 				<version>1.6.2</version>
 				<configuration>
-					<name>Test app</name>
+					<name>TestApp</name>
 					<displayName>Test App</displayName>
+					<version>1.0.0_SNAPSHOT</version>
 					<organizationName>Test Corp.</organizationName>
 					<mainClass>testapp.Main</mainClass>
 					<assetsDir>src/resources/</assetsDir>
@@ -185,7 +186,7 @@
 							<goal>package</goal>
 						</goals>
 						<configuration>
-							<generateInstaller>false</generateInstaller>
+							<generateInstaller>true</generateInstaller>
 							<bundleJre>true</bundleJre>
 							<customizedJre>false</customizedJre>
 							<!-- Note I have all platform jdks for bundling in a folder like this 
