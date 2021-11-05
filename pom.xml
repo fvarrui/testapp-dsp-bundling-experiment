@@ -1,0 +1,245 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.testapp</groupId>
+	<artifactId>testapp-dsp-bundling-experiment</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>testapp-dsp-bundling-experiment</name>
+	<description>Testing JavaPackager</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>win</id>
+			<activation>
+				<property>
+					<name>javafx.platform</name>
+					<value>win</value>
+				</property>
+			</activation>
+			<properties>
+				<platform>windows</platform>
+				<createZipball>true</createZipball>
+				<os.label>win</os.label>				
+			</properties>
+		</profile>
+		<profile>
+			<id>mac</id>
+			<activation>
+				<property>
+					<name>javafx.platform</name>
+					<value>mac</value>
+				</property>
+			</activation>
+			<properties>
+				<platform>mac</platform>
+				<createTarball>true</createTarball>
+				<os.label>mac</os.label>
+			</properties>
+		</profile>
+		<profile>
+			<id>linux</id>
+			<activation>
+				<property>
+					<name>javafx.platform</name>
+					<value>linux</value>
+				</property>
+			</activation>
+			<properties>
+				<platform>linux</platform>
+				<createTarball>true</createTarball>
+				<os.label>linux</os.label>
+			</properties>
+		</profile>
+	</profiles>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-base</artifactId>
+			<version>11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-graphics</artifactId>
+			<version>11</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<sourceDirectory>src/java</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/java</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<testSourceDirectory>src/test</testSourceDirectory>
+		<testResources>
+			<testResource>
+				<directory>src/test</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</testResource>
+		</testResources>
+		<plugins>
+			
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<release>11</release>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>com.github.wvengen</groupId>
+				<artifactId>proguard-maven-plugin</artifactId>
+				<version>2.5.0</version>
+				<dependencies>
+					<dependency>
+						<groupId>net.sf.proguard</groupId>
+						<artifactId>proguard-base</artifactId>
+						<version>6.2.2</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>proguard</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<proguardVersion>6.2.2</proguardVersion>
+					<includeDependency>true</includeDependency>
+					<!--outjar>${project.build.finalName}-obf.jar</outjar -->
+					<options>
+						<option>-keep public class * </option>
+						<option>-keep public class testapp.Main {public static void
+							main(java.lang.String[]);}</option>
+						<option>-keepclassmembers class * {@javafx.fxml.FXML *;}</option>
+						<option>-keepattributes
+							Signature,Exceptions,*Annotation*,InnerClasses,PermittedSubclasses,EnclosingMethod</option>
+					</options>
+					<libs>
+						<lib>${java.home}/jmods/java.base.jmod</lib>
+						<lib>${java.home}/jmods/java.desktop.jmod</lib>
+						<lib>${java.home}/jmods/java.sql.jmod</lib>
+						<lib>${java.home}/jmods/java.xml.jmod</lib>
+					</libs>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-maven-plugin</artifactId>
+				<version>0.0.8</version>
+				<configuration>
+					<mainClass>testapp.Main</mainClass>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>io.github.fvarrui</groupId>
+				<artifactId>javapackager</artifactId>
+				<version>1.6.2</version>
+				<configuration>
+					<name>Test app</name>
+					<displayName>Test App</displayName>
+					<organizationName>Test Corp.</organizationName>
+					<mainClass>testapp.Main</mainClass>
+					<assetsDir>src/resources/</assetsDir>
+					<copyDependencies>true</copyDependencies>
+					<modules>
+						<module>java.base</module>
+						<module>java.desktop</module>
+					</modules>
+					<additionalResources>
+						<additionalResource>src/resources/common/docs/</additionalResource>
+					</additionalResources>
+					<jreDirectoryName>runtime</jreDirectoryName>
+					<licenseFile>src/resources/License.txt</licenseFile>
+					<vmArgs>
+						<vmArg>--upgrade-module-path</vmArg>
+						<vmArg>libs</vmArg>
+					</vmArgs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>bundling</id>
+						<phase>package</phase>
+						<goals>
+							<goal>package</goal>
+						</goals>
+						<configuration>
+							<generateInstaller>false</generateInstaller>
+							<bundleJre>true</bundleJre>
+							<customizedJre>false</customizedJre>
+							<!-- Note I have all platform jdks for bundling in a folder like this 
+								Not sure if this affects dependencies -->
+							<jdkPath>jdks/${os.label}/</jdkPath>
+							<winConfig>
+
+								<!-- general properties -->
+								<icoFile>src/resources/common/appicon.ico</icoFile>
+								<generateSetup>true</generateSetup>
+								<generateMsi>false</generateMsi>
+								<generateMsm>false</generateMsm>
+								<!-- exe creation properties -->
+								<headerType>console</headerType>
+								<wrapJar>true</wrapJar>
+
+								<companyName>Test Company</companyName>
+								<fileVersion>1.0.0.0</fileVersion>
+								<txtFileVersion>1.0.0.0</txtFileVersion>
+								<copyright>Copyright (c) 2021 </copyright>
+								<productVersion>1.0.0.0</productVersion>
+								<txtProductVersion>${project.version}</txtProductVersion>
+								<productName>Test app</productName>
+								<internalName>Test app</internalName>
+								<fileDescription>${description}</fileDescription>
+								<copyright>Test Corp.</copyright>
+								<originalFilename>${name}.exe</originalFilename>
+
+								<!-- setup generation properties -->
+								<setupMode>installForAllUsers</setupMode>
+								<setupLanguages>
+									<english>compiler:Default.isl</english>
+								</setupLanguages>
+								<disableDirPage>false</disableDirPage>
+								<disableProgramGroupPage>false</disableProgramGroupPage>
+								<disableFinishedPage>false</disableFinishedPage>
+								<createDesktopIconTask>true</createDesktopIconTask>
+							</winConfig>
+							<linuxConfig>
+								<generateDeb>true</generateDeb>
+								<generateRpm>true</generateRpm>
+								<!--wrapJar>true</wrapJar -->
+							</linuxConfig>
+							<macConfig>
+								<generateDmg>true</generateDmg>
+								<generatePkg>false</generatePkg>
+								<relocateJar>true</relocateJar>
+							</macConfig>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+		</plugins>
+	</build>
+
+</project>
